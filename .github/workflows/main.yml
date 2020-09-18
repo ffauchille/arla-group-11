@@ -25,9 +25,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: | 
-          docker build -t ffauchille/arla-group-11:$GITHUB_SHA .
+          docker build -t docker.pkg.github.com/ffauchille/arla-group-11:$GITHUB_SHA .
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push ffauchille/arla-group-11:$GITHUB_SHA
+          docker push docker.pkg.github.com/ffauchille/arla-group-11:$GITHUB_SHA
       # Runs a set of commands using the runners shell
       - name: Deploy on production VM
         uses: appleboy/scp-action@master
@@ -40,11 +40,11 @@ jobs:
           envs: TAG
           script: |
             docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull ffauchille/arla-group-11:$TAG
+            docker pull docker.pkg.github.com/ffauchille/arla-group-11:$TAG
             docker run -d \
               --label traefik.enable=true \
               --label traefik.docker.network=web \
               --label traefik.frontend.rule=Host:${{ secrets.SSH_HOST }} \
               --label traefik.frontend.port=80 \
-              ffauchille/arla-group-11:$TAG
+              docker.pkg.github.com/ffauchille/arla-group-11:$TAG
 
