@@ -25,9 +25,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: | 
-          docker build -t docker.pkg.github.com/ffauchille/arla-group-11/arlaid:$GITHUB_SHA .
+          docker build -t docker.pkg.github.com/ffauchille/arla-group-11/arlaid:${{ github.sha }} .
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaid:$GITHUB_SHA
+          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaid:${{ github.sha }}
       # Runs a set of commands using the runners shell
       - name: Deploy on production VM
         uses: appleboy/ssh-action@master
