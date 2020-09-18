@@ -32,7 +32,7 @@ jobs:
       - name: Deploy on production VM
         uses: appleboy/ssh-action@master
         env:
-          TAG: $GITHUB_SHA
+          TAG: ${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
