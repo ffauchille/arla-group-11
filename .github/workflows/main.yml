@@ -42,6 +42,6 @@ jobs:
             echo "TAG: $TAG"
             docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaid:$TAG
-            docker stop arlaide && docker rm arlaide
+            (docker stop arlaide && docker rm arlaide) || echo "Nothing to stop..."
             docker run -d --network web --name arlaide --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:${{ secrets.SSH_HOST }} --label traefik.frontend.port=80 docker.pkg.github.com/ffauchille/arla-group-11/arlaid:$TAG
 
