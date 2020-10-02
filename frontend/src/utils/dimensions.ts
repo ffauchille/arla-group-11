@@ -1,0 +1,1 @@
+export const SMALL_SCREEN = 375 // iPhone 8 width
