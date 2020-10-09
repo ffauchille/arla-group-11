@@ -4,16 +4,30 @@ import express from "express";
 import { FakeDB } from "./db";
 import { HelpRequest } from "./fake-data/help-requests";
 import { extractPageOptions } from "./utils";
+import jwt from "express-jwt";
+import jwks from "jwks-rsa";
 
 const app = express();
 const port = 3000;
+
+const jwtCheck = jwt({
+  secret: jwks.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: "https://dev-pev6jmyx.eu.auth0.com/.well-known/jwks.json",
+  }),
+  audience: "https://api.groupe11.arla-sigl.fr",
+  issuer: "https://dev-pev6jmyx.eu.auth0.com/",
+  algorithms: ["RS256"],
+});
 
 // Setting up CORS; allowing every domains as origin
 // This part should be replace once we know which client
 // domains are allowed to query the API.
 app.use(
   cors({
-    origin: ["*"],
+    origin: "*",
   })
 );
 // Parsing the request to a JSON for us
@@ -21,6 +35,7 @@ app.use(bodyParser.json());
 
 app.get(
   "/v1/help-request",
+  jwtCheck,
   (request: express.Request, response: express.Response): void => {
     // Getting value of page and limit query options:
     // ex: http://<domain>/v1/help-request?page=1&limit=10
