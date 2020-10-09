@@ -1,6 +1,7 @@
 import { ThemeProvider, Typography } from "@material-ui/core";
 import React from "react";
 import ReactDOM from "react-dom";
+import { Auth0Provider } from '@auth0/auth0-react';
 import { TemplateLayout } from "./components/TemplateLayout";
 import { TemplateNavigation } from "./components/TemplateNavigation";
 import { TemplateView1 } from "./components/TemplateView1";
@@ -11,6 +12,7 @@ import {
   TemplateMachineProvider,
 } from "./state/provider";
 import { templateTheme } from "./theme";
+import { Authenticated } from "./components/Authenticated";
 
 /**
  * This component is responsible of displaying the correct view
@@ -30,13 +32,21 @@ const TemplateContent = () => {
 };
 
 ReactDOM.render(
-  <TemplateMachineProvider>
-    <ThemeProvider theme={templateTheme}>
-      <TemplateLayout>
-        <TemplateNavigation />
-        <TemplateContent />
-      </TemplateLayout>
-    </ThemeProvider>
-  </TemplateMachineProvider>,
+  <Auth0Provider
+  domain="dev-pev6jmyx.eu.auth0.com"
+  clientId="9qf66BK8623uCaTD3Aj41Xm6bUPKNthV"
+  redirectUri={window.location.origin}
+  >
+    <Authenticated>
+    <TemplateMachineProvider>
+      <ThemeProvider theme={templateTheme}>
+        <TemplateLayout>
+          <TemplateNavigation />
+          <TemplateContent />
+        </TemplateLayout>
+      </ThemeProvider>
+    </TemplateMachineProvider>
+    </Authenticated>
+  </Auth0Provider>,
   document.getElementById("app")
 );
