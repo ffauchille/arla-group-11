@@ -41,4 +41,4 @@ jobs:
             docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:$TAG
             (docker stop arlaide-api && docker rm arlaide-api) || echo "Nothing to stop..."
-            docker run -d --network web --name arlaide-api --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:${{ secrets.SSH_HOST }} --label traefik.frontend.port=80 docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:$TAG
+            docker run -d --network web --name arlaide-api --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:api.${{ secrets.SSH_HOST }} --label traefik.frontend.port=80 docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:$TAG
