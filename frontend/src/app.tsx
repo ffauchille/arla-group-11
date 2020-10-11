@@ -1,7 +1,7 @@
 import { ThemeProvider, Typography } from "@material-ui/core";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Auth0Provider } from '@auth0/auth0-react';
+import { Auth0Provider } from "@auth0/auth0-react";
 import { TemplateLayout } from "./components/TemplateLayout";
 import { TemplateNavigation } from "./components/TemplateNavigation";
 import { TemplateView1 } from "./components/TemplateView1";
@@ -33,19 +33,20 @@ const TemplateContent = () => {
 
 ReactDOM.render(
   <Auth0Provider
-  domain="dev-pev6jmyx.eu.auth0.com"
-  clientId="9qf66BK8623uCaTD3Aj41Xm6bUPKNthV"
-  redirectUri={window.location.origin}
+    domain="forchill.eu.auth0.com"
+    clientId="Lki99omhCMmEMsVegARLxAQnfT6IApOu"
+    redirectUri={window.location.origin}
+    audience="https://api.groupe11.arla-sigl.fr"
   >
     <Authenticated>
-    <TemplateMachineProvider>
-      <ThemeProvider theme={templateTheme}>
-        <TemplateLayout>
-          <TemplateNavigation />
-          <TemplateContent />
-        </TemplateLayout>
-      </ThemeProvider>
-    </TemplateMachineProvider>
+      <TemplateMachineProvider>
+        <ThemeProvider theme={templateTheme}>
+          <TemplateLayout>
+            <TemplateNavigation />
+            <TemplateContent />
+          </TemplateLayout>
+        </ThemeProvider>
+      </TemplateMachineProvider>
     </Authenticated>
   </Auth0Provider>,
   document.getElementById("app")

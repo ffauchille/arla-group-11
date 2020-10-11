@@ -52,7 +52,7 @@ export const createTemplateStateMachine = () => {
                 Authorization: `Bearer ${event.token}`
               }});
               const data = await apiResponse.json();
-              return {data};
+              return data;
             },
             onDone: { 
               target: TemplateStates.view2,
