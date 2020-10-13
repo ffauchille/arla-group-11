@@ -33,8 +33,8 @@ const TemplateContent = () => {
 
 ReactDOM.render(
   <Auth0Provider
-    domain="forchill.eu.auth0.com"
-    clientId="Lki99omhCMmEMsVegARLxAQnfT6IApOu"
+    domain="arlaide-group-11.eu.auth0.com"
+    clientId="zEcxeM5zzDXTQsHHIrRA3rbu53cNTL18"
     redirectUri={window.location.origin}
     audience="https://api.groupe11.arla-sigl.fr"
     cacheLocation='localstorage'

@@ -15,10 +15,10 @@ const jwtCheck = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: "https://forchill.eu.auth0.com/.well-known/jwks.json",
+    jwksUri: "https://arlaide-group-11.eu.auth0.com/.well-known/jwks.json",
   }),
   audience: "https://api.groupe11.arla-sigl.fr",
-  issuer: "https://forchill.eu.auth0.com/",
+  issuer: "https://arlaide-group-11.eu.auth0.com/",
   algorithms: ["RS256"],
 });
 
