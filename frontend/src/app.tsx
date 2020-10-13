@@ -37,6 +37,7 @@ ReactDOM.render(
     clientId="Lki99omhCMmEMsVegARLxAQnfT6IApOu"
     redirectUri={window.location.origin}
     audience="https://api.groupe11.arla-sigl.fr"
+    cacheLocation='localstorage'
   >
     <Authenticated>
       <TemplateMachineProvider>
