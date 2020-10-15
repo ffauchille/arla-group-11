@@ -6,6 +6,7 @@ import { HelpRequest } from "./fake-data/help-requests";
 import { extractPageOptions } from "./utils";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
+import { UserProfile } from "./fake-data/user-profiles";
 
 const app = express();
 const port = 3000;
@@ -21,6 +22,11 @@ const jwtCheck = jwt({
   issuer: "https://arlaide-group-11.eu.auth0.com/",
   algorithms: ["RS256"],
 });
+
+const premiumOnly = (request: express.Request, response: express.Response) => {
+  // TODO: restric access to premium only
+  return null;
+}
 
 // Setting up CORS; allowing every domains as origin
 // This part should be replace once we know which client
@@ -57,6 +63,23 @@ app.get(
     }
   }
 );
+
+app.get(
+  "/v1/user-profile",
+  jwtCheck,
+  (request: express.Request, response: express.Response): void => {
+    try {
+      const { page, limit } = extractPageOptions(request);
+      const userProfiles: UserProfile[] = FakeDB.getUserProfiles(page, limit);
+
+      response.send(userProfiles)
+
+    } catch (e) {
+      response.statusCode = 500;
+      response.send({ error: e.message });
+    }
+  }
+)
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
