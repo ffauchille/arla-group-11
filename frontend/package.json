@@ -4,7 +4,7 @@
   "description": "Template workshop frontend for Arlaide",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --mode production --env.API_ENDPOINT=https://api.groupe11.arla-sigl.fr",
     "start": "webpack-dev-server --open"
   },
   "repository": {

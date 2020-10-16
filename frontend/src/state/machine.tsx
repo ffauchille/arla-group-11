@@ -1,4 +1,3 @@
-import { Template } from "webpack";
 import { Machine, State } from "xstate";
 import { callApi } from "../utils/api";
 import { allActions, TemplateActions } from "./actions";
