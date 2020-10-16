@@ -12,7 +12,13 @@ import {
   TemplateMachineProvider,
 } from "./state/provider";
 import { templateTheme } from "./theme";
-import { Authenticated } from "./components/Authenticated";
+import {
+  API_IDENTIFIER,
+  Authenticated,
+  AUTH_CLIENT_ID,
+  AUTH_DOMAIN,
+} from "./components/Authenticated";
+import { TemplateView3 } from "./components/TemplateView3";
 
 /**
  * This component is responsible of displaying the correct view
@@ -27,28 +33,29 @@ const TemplateContent = () => {
   if (machine.matches(TemplateStates.view1))
     Content = <TemplateView1 project="Arlaide" />;
   else if (machine.matches(TemplateStates.view2)) Content = <TemplateView2 />;
+  else if (machine.matches(TemplateStates.view3)) Content = <TemplateView3 />;
 
   return Content;
 };
 
 ReactDOM.render(
   <Auth0Provider
-    domain="arlaide-group-11.eu.auth0.com"
-    clientId="zEcxeM5zzDXTQsHHIrRA3rbu53cNTL18"
+    domain={AUTH_DOMAIN}
+    clientId={AUTH_CLIENT_ID}
     redirectUri={window.location.origin}
-    audience="https://api.groupe11.arla-sigl.fr"
-    cacheLocation='localstorage'
+    audience={API_IDENTIFIER}
+    cacheLocation="localstorage"
   >
-    <Authenticated>
-      <TemplateMachineProvider>
+    <TemplateMachineProvider>
+      <Authenticated>
         <ThemeProvider theme={templateTheme}>
           <TemplateLayout>
             <TemplateNavigation />
             <TemplateContent />
           </TemplateLayout>
         </ThemeProvider>
-      </TemplateMachineProvider>
-    </Authenticated>
+      </Authenticated>
+    </TemplateMachineProvider>
   </Auth0Provider>,
   document.getElementById("app")
 );

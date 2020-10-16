@@ -5,9 +5,10 @@ import { FakeDB } from "./db";
 import { HelpRequest } from "./fake-data/help-requests";
 import { extractPageOptions } from "./utils";
 import jwt from "express-jwt";
-import jwtAutz from "express-jwt-authz";
 import jwks from "jwks-rsa";
 import { UserProfile } from "./fake-data/user-profiles";
+import { nextTick } from "process";
+import e from "express";
 
 const app = express();
 const port = 3000;
@@ -24,7 +25,33 @@ const jwtCheck: express.RequestHandler = jwt({
   algorithms: ["RS256"],
 });
 
-const isPremium: express.RequestHandler = jwtAutz(["profiles:full-access"]);
+const profilesFullAccess = "profiles:full-access";
+
+const permissionContains = (permissions: string[]) => (
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+) => {
+  const userPermissions: string[] = (request as any)?.user?.permissions;
+  const allIncluded = permissions.reduce(
+    (includeAll, p) => includeAll && userPermissions.includes(p),
+    true
+  );
+
+  console.log("permissions are: ", permissions);
+  console.log("permissions prem?: ", permissions.includes(profilesFullAccess));
+
+  if (allIncluded) {
+    next();
+  } else {
+    response.statusCode = 403;
+    response.send({ error: "not enough permissions" });
+  }
+};
+
+const isPremium: express.RequestHandler = permissionContains([
+  profilesFullAccess,
+]);
 
 // Setting up CORS; allowing every domains as origin
 // This part should be replace once we know which client
@@ -58,6 +85,21 @@ app.get(
       // so we are returning a 500 HTTP status
       response.statusCode = 500;
       response.send({ error: e.message });
+    }
+  }
+);
+
+app.get(
+  "/v1/permissions",
+  jwtCheck,
+  (request: express.Request, response: express.Response) => {
+    try {
+      const permissions: string[] = (request as any)?.user?.permissions || [];
+      response.send(permissions);
+    } catch (error) {
+      console.log(error);
+      response.statusCode = 500;
+      response.send({ error });
     }
   }
 );

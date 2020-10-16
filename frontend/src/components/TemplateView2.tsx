@@ -1,47 +1,70 @@
-import { Button, Grid, Typography, Card } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { TemplateEvents } from "../state/machine";
 import { TemplateMachineContext } from "../state/provider";
+
+type HelpRequestTableProps = {
+  helpRequests: any[];
+};
+
+const HelpRequestTable: React.FC<HelpRequestTableProps> = ({
+  helpRequests,
+}) => {
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Help request ID</TableCell>
+            <TableCell align="right">Location</TableCell>
+            <TableCell align="right">Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {helpRequests.map((hr, index) => (
+            <TableRow key={index}>
+              <TableCell component="th" scope="row">
+                {hr.id}
+              </TableCell>
+              <TableCell align="right">{hr.location}</TableCell>
+              <TableCell align="right">{hr.description}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 export const TemplateView2: React.FC = () => {
   const { machine, send } = React.useContext(TemplateMachineContext);
   const { helpRequests } = machine.context;
-  const { getAccessTokenSilently } = useAuth0();
-  const [token, setToken] = React.useState<string>();
-
-  React.useEffect(() => {
-    const getToken = async () => {
-      const authToken = await getAccessTokenSilently();
-      setToken(authToken);
-    }
-    getToken()
-  }, [token]);
 
   return (
     <Grid container spacing={5}>
-      <Grid item xs={6}>
-        <Typography align='right'>Update global count</Typography>
-      </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <Button
           variant="contained"
-          disabled={!token}
           color="primary"
           onClick={() => {
-            send({ type: TemplateEvents.loadHelpRequests, token });
+            send({ type: TemplateEvents.loadHelpRequests });
           }}
         >
           Load Requests
         </Button>
       </Grid>
       <Grid item xs={12}>
-          {helpRequests && (helpRequests as any[]).map((hr, i) => (
-            <Card key={i}>
-              Request ID: {hr.id}
-              Request Location: {hr.location} 
-            </Card>
-          ))}
+        <HelpRequestTable helpRequests={helpRequests} />
       </Grid>
     </Grid>
   );
