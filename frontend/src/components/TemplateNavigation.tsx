@@ -1,11 +1,15 @@
-import { Grid, Tab, Tabs } from "@material-ui/core";
+import { Button, Grid, Tab, Tabs } from "@material-ui/core";
 import React from "react";
 import { TemplateEvents, TemplateStates } from "../state/machine";
 import { TemplateMachineContext } from "../state/provider";
 
 export const TemplateNavigation = () => {
   const { machine, send } = React.useContext(TemplateMachineContext);
-  const tabSelected = machine.matches(TemplateStates.view1) ? 0 : 1;
+
+  let tabSelected = 0;
+  if (machine.matches(TemplateStates.view2)) tabSelected = 1;
+  else if (machine.matches(TemplateStates.view3)) tabSelected = 2;
+
   return (
     <Grid container spacing={5}>
       <Grid item xs={12}>
@@ -13,8 +17,9 @@ export const TemplateNavigation = () => {
           centered
           value={tabSelected}
           onChange={(_, idx) => {
-            const nextView =
-              idx === 0 ? TemplateEvents.toView1 : TemplateEvents.toView2;
+            let nextView = TemplateEvents.toView1;
+            if (idx === 1) nextView = TemplateEvents.toView2;
+            else if (idx === 2) nextView = TemplateEvents.toView3;
             send(nextView);
           }}
           indicatorColor="primary"
@@ -23,6 +28,7 @@ export const TemplateNavigation = () => {
         >
           <Tab label="View 1" />
           <Tab label="View 2" />
+          <Tab label="View 3" />
         </Tabs>
       </Grid>
     </Grid>

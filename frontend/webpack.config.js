@@ -1,8 +1,9 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-module.exports = {
+module.exports = env => ({
   entry: path.resolve(__dirname, "src/app.tsx"),
   devtool: "inline-source-map",
   devServer: {
@@ -29,5 +30,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "./index.html")
     }),
+    new webpack.DefinePlugin({
+      'process.env.API_ENDPOINT': JSON.stringify(env.API_ENDPOINT),
+    })
   ]
-};
+});

@@ -4,7 +4,7 @@
   "description": "Template workshop frontend for Arlaide",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --mode production --env.API_ENDPOINT=https://api.groupe11.arla-sigl.fr",
     "start": "webpack-dev-server --open"
   },
   "repository": {
@@ -27,6 +27,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@xstate/react": "^0.8.1",
+    "@auth0/auth0-react": "1.1.0",
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
