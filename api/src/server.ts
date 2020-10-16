@@ -1,14 +1,12 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
-import { FakeDB } from "./db";
-import { HelpRequest } from "./fake-data/help-requests";
-import { extractPageOptions } from "./utils";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
+import { FakeDB } from "./db";
+import { HelpRequest } from "./fake-data/help-requests";
 import { UserProfile } from "./fake-data/user-profiles";
-import { nextTick } from "process";
-import e from "express";
+import { extractPageOptions } from "./utils";
 
 const app = express();
 const port = 3000;
@@ -27,6 +25,11 @@ const jwtCheck: express.RequestHandler = jwt({
 
 const profilesFullAccess = "profiles:full-access";
 
+/**
+ * Checks if user has all permissions in parameter. If not all permissions are matched,
+ * user is unauthorized.s
+ * @param permissions permissions users needs to have to be authorized
+ */
 const permissionContains = (permissions: string[]) => (
   request: express.Request,
   response: express.Response,
@@ -37,9 +40,6 @@ const permissionContains = (permissions: string[]) => (
     (includeAll, p) => includeAll && userPermissions.includes(p),
     true
   );
-
-  console.log("permissions are: ", permissions);
-  console.log("permissions prem?: ", permissions.includes(profilesFullAccess));
 
   if (allIncluded) {
     next();

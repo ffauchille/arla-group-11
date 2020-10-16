@@ -93,10 +93,7 @@ export const createTemplateStateMachine = () => {
             onDone: {
               target: TemplateStates.view3,
               actions: [TemplateActions.updateUserProfiles],
-            },
-            onError: {
-              target: TemplateStates.view3,
-            },
+            }
           },
         },
       },
