@@ -9,17 +9,15 @@ export const AUTH_DOMAIN = "arlaide-group-11.eu.auth0.com";
 export const AUTH_CLIENT_ID = "zEcxeM5zzDXTQsHHIrRA3rbu53cNTL18";
 export const API_IDENTIFIER = "https://api.groupe11.arla-sigl.fr";
 
-type WithPermissionsProps = {
-  authToken: string;
-};
-
-const WithPermissions: React.FC<WithPermissionsProps> = ({ authToken, children }) => {
+const WithPermissions: React.FC = ({ children }) => {
   const { machine, send } = React.useContext(TemplateMachineContext);
   const { permissions } = machine.context;
+  const {getAccessTokenSilently} = useAuth0();
 
   React.useEffect(() => {
     const getClaims = async () => {
       try {
+        const authToken = await getAccessTokenSilently();
         const userPermissions = await callApi(authToken)(`/v1/permissions`);
         send({
           type: TemplateEvents.setUserPermissions,
@@ -33,31 +31,6 @@ const WithPermissions: React.FC<WithPermissionsProps> = ({ authToken, children }
   }, []);
 
   return permissions === undefined ? <Loading /> : <>{children}</>;
-};
-
-/**
- * This component is setting the token to the the state machine's context.
- * This will enable you to call the api with the token from the context directly, instead
- * of calling getAccessTokenSilently from every components that triggers any secured API calls.
- */
-const WithToken: React.FC = ({ children }) => {
-  const { machine, send } = React.useContext(TemplateMachineContext);
-  const { getAccessTokenSilently } = useAuth0();
-  const { authToken } = machine.context;
-
-  React.useEffect(() => {
-    const getToken = async () => {
-      const token = await getAccessTokenSilently();
-      send({ type: TemplateEvents.setAuthToken, token });
-    };
-    getToken();
-  }, [authToken]);
-
-  return authToken ? (
-    <WithPermissions authToken={authToken}>{children}</WithPermissions>
-  ) : (
-    <Loading />
-  );
 };
 
 /**
@@ -75,5 +48,5 @@ export const Authenticated: React.FC = ({ children }) => {
     redirect();
   }, [isLoading]);
 
-  return isLoading ? <Loading /> : <WithToken>{children}</WithToken>;
+  return isLoading ? <Loading /> : <WithPermissions>{children}</WithPermissions>;
 };

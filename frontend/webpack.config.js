@@ -31,7 +31,7 @@ module.exports = env => ({
       template: path.resolve(__dirname, "./index.html")
     }),
     new webpack.DefinePlugin({
-      'process.env.API_ENDPOINT': JSON.stringify(env.API_ENDPOINT),
+      'process.env.API_ENDPOINT': JSON.stringify(env?.API_ENDPOINT || "http://localhost:3000"),
     })
   ]
 });

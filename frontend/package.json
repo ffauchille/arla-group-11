@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "webpack --mode production --env.API_ENDPOINT=https://api.groupe11.arla-sigl.fr",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open"  
   },
   "repository": {
     "type": "git",

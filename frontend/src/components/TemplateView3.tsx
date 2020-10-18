@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -8,8 +9,8 @@ import CardMedia from "@material-ui/core/CardMedia";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
-import { TemplateEvents } from "../state/machine";
 import { TemplateMachineContext } from "../state/provider";
+import { callApi } from "../utils/api";
 
 const useStyles = makeStyles({
   root: {
@@ -65,8 +66,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ username, job }) => {
 };
 
 const UserProfiles: React.FC = () => {
-  const { machine, send } = React.useContext(TemplateMachineContext);
-  const { userProfiles } = machine.context;
+  const [userProfiles, setUserProfiles] = React.useState<any[]>([]);
+  const { getAccessTokenSilently } = useAuth0();
+
+  const getUserProfiles = async () => {
+    const authToken = await getAccessTokenSilently();
+    const data = await callApi(authToken)("/v1/user-profile?page=1&limit=10");
+    setUserProfiles(data);
+  };
 
   return (
     <Grid container spacing={6}>
@@ -74,7 +81,7 @@ const UserProfiles: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => send({ type: TemplateEvents.loadUserProfiles })}
+          onClick={() => getUserProfiles()}
         >
           Load user profiles
         </Button>
