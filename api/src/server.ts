@@ -121,6 +121,7 @@ app.get(
 
 app.get(
   "/v1/comment",
+  jwtCheck,
   async (request: express.Request, response: express.Response) => {
     try {
       const helpRequestId: number = asNumber(request.query, 'helpRequestId');

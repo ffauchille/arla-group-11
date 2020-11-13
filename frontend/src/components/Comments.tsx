@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Comment: React.FC<CommentProps> = ({ text, timestamp }) => {
   const classes = useStyles();
-  console.log(text, timestamp);
+
   return (
     <div className={classes.root}>
       <Paper elevation={3}>
