@@ -3,10 +3,9 @@ import cors from "cors";
 import express from "express";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
-import { FakeDB } from "./db";
-import { HelpRequest } from "./fake-data/help-requests";
+import { FakeDB, RDS, DocumentDB, UserHelpRequest } from "./db";
 import { UserProfile } from "./fake-data/user-profiles";
-import { extractPageOptions } from "./utils";
+import { asNumber, extractPageOptions } from "./utils";
 
 const app = express();
 const port = 3000;
@@ -67,7 +66,7 @@ app.use(bodyParser.json());
 app.get(
   "/v1/help-request",
   jwtCheck,
-  (request: express.Request, response: express.Response): void => {
+  async (request: express.Request, response: express.Response) => {
     // Getting value of page and limit query options:
     // ex: http://<domain>/v1/help-request?page=1&limit=10
     //  page == 1
@@ -76,7 +75,7 @@ app.get(
       const { page, limit } = extractPageOptions(request);
 
       // Query the page of help requests from the fake database
-      const helpRequests: HelpRequest[] = FakeDB.getHelpRequest(page, limit);
+      const helpRequests: UserHelpRequest[] = await RDS.getHelpRequests(page, limit);
 
       // sends the response back to the client, when node will be ready!
       response.send(helpRequests);
@@ -119,6 +118,20 @@ app.get(
     }
   }
 );
+
+app.get(
+  "/v1/comment",
+  async (request: express.Request, response: express.Response) => {
+    try {
+      const helpRequestId: number = asNumber(request.query, 'helpRequestId');
+      const comments = await DocumentDB.getHelpRequestComments(helpRequestId);
+      response.send(comments);
+    } catch (e) {
+      response.statusCode = 500;
+      response.send({ error: e.message });
+    }
+  }
+)
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);

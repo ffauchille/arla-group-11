@@ -17,6 +17,7 @@ import { TemplateEvents } from "../state/machine";
 import { TemplateMachineContext } from "../state/provider";
 import { useAuth0 } from "@auth0/auth0-react";
 import { callApi } from "../utils/api";
+import { Comments } from "./Comments";
 
 type ClosableErrorProps = {
   onClickClose: Function;
@@ -52,19 +53,25 @@ const HelpRequestTable: React.FC<HelpRequestTableProps> = ({
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Help request ID</TableCell>
-            <TableCell align="right">Location</TableCell>
-            <TableCell align="right">Description</TableCell>
+            <TableCell>From user</TableCell>
+            <TableCell align="right">Title</TableCell>
+            <TableCell align="right">Details</TableCell>
+            <TableCell align="right">City</TableCell>
+            <TableCell align="right">Country</TableCell>
+            <TableCell align="left">Comments</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {helpRequests.map((hr, index) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row">
-                {hr.id}
+                {hr.owner_username}
               </TableCell>
-              <TableCell align="right">{hr.location}</TableCell>
-              <TableCell align="right">{hr.description}</TableCell>
+              <TableCell align="right">{hr.title}</TableCell>
+              <TableCell align="right">{hr.details}</TableCell>
+              <TableCell align="right">{hr.city}</TableCell>
+              <TableCell align="right">{hr.country}</TableCell>
+              <TableCell align="left">{<Comments helpRequestId={hr.help_request_id}/>}</TableCell>
             </TableRow>
           ))}
         </TableBody>
