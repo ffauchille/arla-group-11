@@ -8,7 +8,7 @@ type ExtractPageOptionsResponse = {
 
 // Try to cast to the query option to a number;
 // throws an error otherwise
-const asNumber = (query: qs.ParsedQs, optionName: string) => {
+export const asNumber = (query: qs.ParsedQs, optionName: string) => {
   const queryOption = query[optionName];
 
   if (typeof queryOption === "string") {
