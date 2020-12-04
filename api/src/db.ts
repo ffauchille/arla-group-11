@@ -49,6 +49,7 @@ export namespace RDS {
   // Create a pool of connection;
   // to control number of concurrent connections.
   // We leave default values for now.
+  console.log("process.env.RDS_HOST: ", process.env.RDS_HOST);
   const pool = new Pool({
       host: process.env.RDS_HOST || "localhost",
       port: +(process.env.RDS_PORT || 5432),
