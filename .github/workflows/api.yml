@@ -6,8 +6,6 @@ name: API CD
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,7 +22,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: | 
-          docker build -t docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:${{ github.sha }} api/
+          docker build --build-arg db_host=${{ secrets.RDS_PRO_HOST }} --build-arg db_port=${{ secrets.RDS_PRO_PORT }} --build-arg db_name=${{ secrets.RDS_PRO_NAME }} --build-arg db_user=${{ secrets.RDS_PRO_USER }} --build-arg db_password=${{ secrets.RDS_PRO_PASSWORD }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:${{ github.sha }} api/
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaid-api:${{ github.sha }}
       # Runs a set of commands using the runners shell
