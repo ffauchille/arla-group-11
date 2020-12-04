@@ -1,0 +1,82 @@
+# This is a basic workflow to help you get started with Actions
+name: API CD
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-and-deploy-ci-api:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Build and publish docker image
+        run: | 
+          docker build \
+            --build-arg db_host=${{ secrets.RDS_CI_HOST }} \ 
+            --build-arg db_port=${{ secrets.RDS_CI_PORT }} \ 
+            --build-arg db_name=${{ secrets.RDS_CI_NAME }} \
+            --build-arg db_user=${{ secrets.RDS_CI_USER }} \
+            --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }}
+            -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }} api/
+          docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }}
+      # Runs a set of commands using the runners shell
+      - name: Deploy on production VM
+        uses: appleboy/ssh-action@master
+        env:
+          TAG: ${{ github.sha }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: TAG
+          script: |
+            docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:$TAG
+            (docker stop arlaide-api-ci && docker rm arlaide-api-ci) || echo "Nothing to stop..."
+            docker run -d --network web --name arlaide-api-ci --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:ci.api.${{ secrets.SSH_HOST }} --label traefik.frontend.port=3000 docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:$TAG
+  
+  build-and-deploy-frontend-ci:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Build and publish docker image
+        run: | 
+          docker build \
+            --build-arg api_endpoint=https://ci.api.${{ secrets.SSH_HOST }} \
+            -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }} .
+          docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }}
+      # Runs a set of commands using the runners shell
+      - name: Deploy on production VM
+        uses: appleboy/ssh-action@master
+        env:
+          TAG: ${{ github.sha }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: TAG
+          script: |
+            echo "TAG: $TAG"
+            docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:$TAG
+            (docker stop arlaide-ci && docker rm arlaide-ci) || echo "Nothing to stop..."
+            docker run -d --network web --name arlaide-ci --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:ci.${{ secrets.SSH_HOST }} --label traefik.frontend.port=80 docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:$TAG

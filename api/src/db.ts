@@ -50,11 +50,11 @@ export namespace RDS {
   // to control number of concurrent connections.
   // We leave default values for now.
   const pool = new Pool({
-      host: "localhost",
-      port: 5432,
-      database: "arlaide",
-      user: "sigl2021",
-      password: "sigl2021"
+      host: process.env.RDS_HOST || "localhost",
+      port: +(process.env.RDS_PORT || 5432),
+      database: process.env.RDS_NAME || "arlaide",
+      user: process.env.RDS_USER || "sigl2021",
+      password: process.env.RDS_PASSWORD || "sigl2021"
   });
 
   // Handler method to perform any kind of query 
