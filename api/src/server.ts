@@ -129,8 +129,8 @@ app.get(
       const comments = await DocumentDB.getHelpRequestComments(helpRequestId);
       response.send(comments);
     } catch (e) {
-      response.statusCode = 500;
-      response.send({ error: e.message });
+      response.statusCode = 200;
+      response.send([]);
     }
   }
 )

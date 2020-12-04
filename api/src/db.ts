@@ -49,6 +49,7 @@ export namespace RDS {
   // Create a pool of connection;
   // to control number of concurrent connections.
   // We leave default values for now.
+  console.log("process.env.RDS_HOST: ", process.env.RDS_HOST);
   const pool = new Pool({
       host: process.env.RDS_HOST || "localhost",
       port: +(process.env.RDS_PORT || 5432),
@@ -97,7 +98,8 @@ export type Comment = {
 
 export namespace DocumentDB {
 
-  const uri = "mongodb://sigl2021:sigl2021@localhost:27017?authSource=admin";
+  
+  const uri = `mongodb://sigl2021:sigl2021@localhost:27017?authSource=admin`;
 
   const find = <T>(collectionName: string) => async (findQuery: FilterQuery<T>) => {
       const client = new MongoClient(uri);
