@@ -98,14 +98,19 @@ export type Comment = {
 
 export namespace DocumentDB {
 
-  
-  const uri = `mongodb://sigl2021:sigl2021@localhost:27017?authSource=admin`;
+  const MONGO_HOST = process.env.DOC_DB_HOST || 'localhost';
+  const MONGO_PORT = process.env.DOC_DB_PORT || 27017; 
+  const MONGO_DB_NAME = process.env.DOC_DB_NAME || 'arlaide';
+  const MONGO_USER = process.env.DOC_DB_USER || 'sigl2021';
+  const MONGO_PASSWORD = process.env.DOC_DB_PASSWORD || 'sigl2021';
+
+  const uri = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}?authSource=${MONGO_DB_NAME}`;
 
   const find = <T>(collectionName: string) => async (findQuery: FilterQuery<T>) => {
       const client = new MongoClient(uri);
       try {
         await client.connect();
-        const database = client.db('arlaide');
+        const database = client.db(MONGO_DB_NAME);
         const collection = database.collection<T>(collectionName);
         const documents = await collection.find(findQuery);
         return documents.toArray();
