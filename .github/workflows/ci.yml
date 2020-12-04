@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: API CD
+name: Deploy CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -27,7 +27,7 @@ jobs:
             --build-arg db_port=${{ secrets.RDS_CI_PORT }} \ 
             --build-arg db_name=${{ secrets.RDS_CI_NAME }} \
             --build-arg db_user=${{ secrets.RDS_CI_USER }} \
-            --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }}
+            --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }} \
             -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }} api/
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }}
