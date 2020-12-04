@@ -22,13 +22,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: | 
-          docker build \
-            --build-arg db_host=${{ secrets.RDS_CI_HOST }} \ 
-            --build-arg db_port=${{ secrets.RDS_CI_PORT }} \ 
-            --build-arg db_name=${{ secrets.RDS_CI_NAME }} \
-            --build-arg db_user=${{ secrets.RDS_CI_USER }} \
-            --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }} \
-            -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }} api/
+          docker build --build-arg db_host=${{ secrets.RDS_CI_HOST }} --build-arg db_port=${{ secrets.RDS_CI_PORT }} --build-arg db_name=${{ secrets.RDS_CI_NAME }} --build-arg db_user=${{ secrets.RDS_CI_USER }} --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }} api/
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }}
       # Runs a set of commands using the runners shell
@@ -59,9 +53,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: | 
-          docker build \
-            --build-arg api_endpoint=https://ci.api.${{ secrets.SSH_HOST }} \
-            -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }} .
+          docker build --build-arg api_url=https://ci.api.${{ secrets.SSH_HOST }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }} .
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }}
       # Runs a set of commands using the runners shell
