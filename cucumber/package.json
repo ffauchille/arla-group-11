@@ -1,0 +1,19 @@
+{
+  "name": "cucumber",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js",
+    "test:ci": "API_DOMAIN=https://ci.api.groupe11.arla-sigl.fr cucumber-js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cucumber/cucumber": "^7.0.0-rc.0"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
