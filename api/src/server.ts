@@ -73,7 +73,7 @@ app.get(
     //  page == 1
     //  limit == 10
     try {
-      const { page, limit } = extractPageOptions(request);
+      const { page, limit } = extractPageOptions(request.query);
 
       // Query the page of help requests from the fake database
       const helpRequests: UserHelpRequest[] = await RDS.getHelpRequests(page, limit);
@@ -110,7 +110,7 @@ app.get(
   isPremium,
   (request: express.Request, response: express.Response): void => {
     try {
-      const { page, limit } = extractPageOptions(request);
+      const { page, limit } = extractPageOptions(request.query);
       const userProfiles: UserProfile[] = FakeDB.getUserProfiles(page, limit);
       response.send(userProfiles);
     } catch (e) {

@@ -8,10 +8,23 @@ on:
     branches: [master]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  api-unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run: |
+          cd api/
+          npm install
+          npm test
+
   # This workflow contains a single job called "build"
   build-and-deploy-ci-api:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    needs: [api-unit-test]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
