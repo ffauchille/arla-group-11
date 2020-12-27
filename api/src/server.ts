@@ -94,7 +94,7 @@ app.use(bodyParser.json());
 
 app.get(
   "/v1/help-request",
-  jwtCheck,
+  //jwtCheck,
   async (request: express.Request, response: express.Response) => {
     // Getting value of page and limit query options:
     // ex: http://<domain>/v1/help-request?page=1&limit=10
@@ -124,7 +124,7 @@ app.get(
 
 app.get(
   "/v1/permissions",
-  jwtCheck,
+  //jwtCheck,
   (request: express.Request, response: express.Response) => {
     try {
       const permissions: string[] = (request as any)?.user?.permissions || [];
@@ -139,7 +139,7 @@ app.get(
 
 app.get(
   "/v1/user-profile",
-  jwtCheck,
+  //jwtCheck,
   isPremium,
   (request: express.Request, response: express.Response): void => {
     try {
@@ -155,7 +155,7 @@ app.get(
 
 app.get(
   "/v1/comment",
-  jwtCheck,
+  //jwtCheck,
   async (request: express.Request, response: express.Response) => {
     try {
       const helpRequestId: number = asNumber(request.query, "helpRequestId");
@@ -163,6 +163,7 @@ app.get(
       response.send(comments);
     } catch (e) {
       response.statusCode = 200;
+      apiLogger.error({error: e})
       response.send([]);
     }
   }
