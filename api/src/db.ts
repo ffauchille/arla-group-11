@@ -103,7 +103,7 @@ export namespace DocumentDB {
   const MONGO_DB_NAME = process.env.DOC_DB_NAME || 'arlaide';
   const MONGO_USER = process.env.DOC_DB_USER || 'sigl2021';
   const MONGO_PASSWORD = process.env.DOC_DB_PASSWORD || 'sigl2021';
-  const MONGO_AUTH_SOURCE = process.env.DOC_DB_NAME || 'admin';
+  const MONGO_AUTH_SOURCE = process.env.DOC_DB_AUTH_SOURCE || process.env.DOC_DB_NAME || 'admin';
 
   const uri = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}?authSource=${MONGO_AUTH_SOURCE}`;
   console.log("Mongo uri: ", uri);
