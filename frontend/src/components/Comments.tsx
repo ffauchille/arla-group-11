@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Grid, Typography } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -53,13 +52,11 @@ const Comment: React.FC<CommentProps> = ({ text, timestamp }) => {
 };
 
 export const Comments: React.FC<CommentsProps> = ({ helpRequestId }) => {
-  const { getAccessTokenSilently } = useAuth0();
   const [comments, setComments] = React.useState<any[]>([]);
   
   React.useEffect(() => {
     const getComments = async () => {
-      const token = await getAccessTokenSilently();
-      const commentList = await callApi(token)(
+      const commentList = await callApi(
         `/v1/comment?helpRequestId=${helpRequestId}`
       );
       setComments(commentList);

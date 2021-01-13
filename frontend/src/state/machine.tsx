@@ -68,7 +68,7 @@ export const createTemplateStateMachine = () => {
           invoke: {
             id: "invokeHelpRequests",
             src: async (context, event) => {
-              return await callApi(context.authToken)(
+              return await callApi(
                 "/v1/help-request?page=1&limit=20"
               );
             },
@@ -85,7 +85,7 @@ export const createTemplateStateMachine = () => {
           invoke: {
             id: "invokeUserProfiles",
             src: async (context, event) => {
-              return await callApi(context.authToken)(
+              return await callApi(
                 "/v1/user-profile?page=1&limit=20"
               );
             },

@@ -1,7 +1,6 @@
 import { ThemeProvider, Typography } from "@material-ui/core";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Auth0Provider } from "@auth0/auth0-react";
 import { TemplateLayout } from "./components/TemplateLayout";
 import { TemplateNavigation } from "./components/TemplateNavigation";
 import { TemplateView1 } from "./components/TemplateView1";
@@ -12,12 +11,6 @@ import {
   TemplateMachineProvider,
 } from "./state/provider";
 import { templateTheme } from "./theme";
-import {
-  API_IDENTIFIER,
-  Authenticated,
-  AUTH_CLIENT_ID,
-  AUTH_DOMAIN,
-} from "./components/Authenticated";
 import { TemplateView3 } from "./components/TemplateView3";
 
 /**
@@ -39,23 +32,13 @@ const TemplateContent = () => {
 };
 
 ReactDOM.render(
-  <Auth0Provider
-    domain={AUTH_DOMAIN}
-    clientId={AUTH_CLIENT_ID}
-    redirectUri={window.location.origin}
-    audience={API_IDENTIFIER}
-    cacheLocation="localstorage"
-  >
-    <TemplateMachineProvider>
-      <Authenticated>
-        <ThemeProvider theme={templateTheme}>
-          <TemplateLayout>
-            <TemplateNavigation />
-            <TemplateContent />
-          </TemplateLayout>
-        </ThemeProvider>
-      </Authenticated>
-    </TemplateMachineProvider>
-  </Auth0Provider>,
+  <TemplateMachineProvider>
+    <ThemeProvider theme={templateTheme}>
+      <TemplateLayout>
+        <TemplateNavigation />
+        <TemplateContent />
+      </TemplateLayout>
+    </ThemeProvider>
+  </TemplateMachineProvider>,
   document.getElementById("app")
 );

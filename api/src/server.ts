@@ -1,10 +1,10 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import express from "express";
+import express, { response } from "express";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
+import log4js from "log4js";
 import { DocumentDB, FakeDB, RDS, UserHelpRequest } from "./db";
-import { HelpRequest } from "./fake-data/help-requests";
 import { UserProfile } from "./fake-data/user-profiles";
 import { extractPageOptions, asNumber } from "./utils";
 
@@ -53,6 +53,34 @@ const isPremium: express.RequestHandler = permissionContains([
   profilesFullAccess,
 ]);
 
+// Configure logger
+const loggerConfig: log4js.Configuration = {
+  appenders: {
+    stdout: {
+      type: "console",
+      layout: {
+        type: "coloured",
+      },
+    },
+    logstash: {
+      type: "log4js-logstash",
+      host: "localhost",
+      port: 5000,
+    },
+  },
+  categories: {
+    default: {
+      appenders: ['stdout', 'logstash'],
+      level: 'trace'
+    }
+  },
+};
+
+log4js.configure(loggerConfig);
+
+// get a new logger instance tagged with `help-request-api`
+const apiLogger = log4js.getLogger("help-request-api");
+
 // Setting up CORS; allowing every domains as origin
 // This part should be replace once we know which client
 // domains are allowed to query the API.
@@ -64,9 +92,13 @@ app.use(
 // Parsing the request to a JSON for us
 app.use(bodyParser.json());
 
+app.get("/", (_: express.Request, response: express.Response) => {
+  response.send('Health check Ok');
+})
+
 app.get(
   "/v1/help-request",
-  jwtCheck,
+  //jwtCheck,
   async (request: express.Request, response: express.Response) => {
     // Getting value of page and limit query options:
     // ex: http://<domain>/v1/help-request?page=1&limit=10
@@ -76,14 +108,19 @@ app.get(
       const { page, limit } = extractPageOptions(request.query);
 
       // Query the page of help requests from the fake database
-      const helpRequests: UserHelpRequest[] = await RDS.getHelpRequests(page, limit);
+      const helpRequests: UserHelpRequest[] = await RDS.getHelpRequests(
+        page,
+        limit
+      );
 
+      apiLogger.info('Success call on /v1/help-request', {page, limit});
       // sends the response back to the client, when node will be ready!
       response.send(helpRequests);
     } catch (e) {
       // Something went wrong internally to the API,
       // so we are returning a 500 HTTP status
       response.statusCode = 500;
+      apiLogger.error('Error with /v1/help-request API', {error: e.message});
       response.send({ error: e.message });
     }
   }
@@ -91,7 +128,7 @@ app.get(
 
 app.get(
   "/v1/permissions",
-  jwtCheck,
+  //jwtCheck,
   (request: express.Request, response: express.Response) => {
     try {
       const permissions: string[] = (request as any)?.user?.permissions || [];
@@ -106,7 +143,7 @@ app.get(
 
 app.get(
   "/v1/user-profile",
-  jwtCheck,
+  //jwtCheck,
   isPremium,
   (request: express.Request, response: express.Response): void => {
     try {
@@ -122,18 +159,19 @@ app.get(
 
 app.get(
   "/v1/comment",
-  jwtCheck,
+  //jwtCheck,
   async (request: express.Request, response: express.Response) => {
     try {
-      const helpRequestId: number = asNumber(request.query, 'helpRequestId');
+      const helpRequestId: number = asNumber(request.query, "helpRequestId");
       const comments = await DocumentDB.getHelpRequestComments(helpRequestId);
       response.send(comments);
     } catch (e) {
       response.statusCode = 200;
+      apiLogger.error({error: e})
       response.send([]);
     }
   }
-)
+);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);

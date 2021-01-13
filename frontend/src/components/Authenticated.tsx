@@ -18,7 +18,7 @@ const WithPermissions: React.FC = ({ children }) => {
     const getClaims = async () => {
       try {
         const authToken = await getAccessTokenSilently();
-        const userPermissions = await callApi(authToken)(`/v1/permissions`);
+        const userPermissions = await callApi(`/v1/permissions`);
         send({
           type: TemplateEvents.setUserPermissions,
           permissions: userPermissions,
@@ -50,3 +50,8 @@ export const Authenticated: React.FC = ({ children }) => {
 
   return isLoading ? <Loading /> : <WithPermissions>{children}</WithPermissions>;
 };
+
+
+export const NoAuthentication: React.FC = ({children}) => {
+  return <>{children}</>
+}

@@ -15,6 +15,7 @@ ARG doc_db_port
 ARG doc_db_name
 ARG doc_db_user
 ARG doc_db_password
+ARG doc_db_auth_source
 
 ENV RDS_HOST=${db_host}
 ENV RDS_PORT=${db_port}
@@ -27,8 +28,10 @@ ENV DOC_DB_PORT=${doc_db_port}
 ENV DOC_DB_NAME=${doc_db_name}
 ENV DOC_DB_USER=${doc_db_user}
 ENV DOC_DB_PASSWORD=${doc_db_password}
+ENV DOC_DB_AUTH_SOURCE=${doc_db_auth_source}
 
 RUN npm i
-CMD npm start
+RUN npm run build
+CMD npm run serve
 
 EXPOSE 3000

@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: Deploy CI
+name: Build image for k8s
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -21,7 +21,7 @@ jobs:
           npm test
 
   # This workflow contains a single job called "build"
-  build-and-deploy-ci-api:
+  build-k8s-api:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     needs: [api-unit-test]
@@ -34,26 +34,11 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: |
-          docker build --build-arg db_host=${{ secrets.RDS_CI_HOST }} --build-arg db_port=${{ secrets.RDS_CI_PORT }} --build-arg db_name=${{ secrets.RDS_CI_NAME }} --build-arg db_user=${{ secrets.RDS_CI_USER }} --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }} --build-arg doc_db_host=${{ secrets.DOC_DB_HOST }} --build-arg doc_db_port=${{ secrets.DOC_DB_PORT }} --build-arg doc_db_name=${{ secrets.DOC_DB_NAME }} --build-arg doc_db_user=${{ secrets.DOC_DB_USER }} --build-arg doc_db_password=${{ secrets.DOC_DB_PASSWORD }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }} api/
+          docker build --build-arg db_host=${{ secrets.RDS_CI_HOST }} --build-arg db_port=${{ secrets.RDS_CI_PORT }} --build-arg db_name=${{ secrets.RDS_CI_NAME }} --build-arg db_user=${{ secrets.RDS_CI_USER }} --build-arg db_password=${{ secrets.RDS_CI_PASSWORD }} --build-arg doc_db_host=${{ secrets.DOC_DB_HOST }} --build-arg doc_db_port=${{ secrets.DOC_DB_PORT }} --build-arg doc_db_name=${{ secrets.DOC_DB_NAME }} --build-arg doc_db_user=${{ secrets.DOC_DB_USER }} --build-arg doc_db_password=${{ secrets.DOC_DB_PASSWORD }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-k8s:${{ github.sha }} api/
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:${{ github.sha }}
-      # Runs a set of commands using the runners shell
-      - name: Deploy on production VM
-        uses: appleboy/ssh-action@master
-        env:
-          TAG: ${{ github.sha }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          envs: TAG
-          script: |
-            docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:$TAG
-            (docker stop arlaide-api-ci && docker rm arlaide-api-ci) || echo "Nothing to stop..."
-            docker run -d --network web --name arlaide-api-ci --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:ci.api.${{ secrets.SSH_HOST }} --label traefik.frontend.port=3000 docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-ci:$TAG
+          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-api-k8s:${{ github.sha }}
 
-  build-and-deploy-frontend-ci:
+  build-k8s-frontend:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -65,59 +50,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build and publish docker image
         run: |
-          docker build --build-arg api_url=https://ci.api.${{ secrets.SSH_HOST }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }} .
+          docker build --build-arg api_url=https://api.${{ secrets.K8S_HOST }} -t docker.pkg.github.com/ffauchille/arla-group-11/arlaide-web-k8s:${{ github.sha }} .
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:${{ github.sha }}
-      # Runs a set of commands using the runners shell
-      - name: Deploy on production VM
-        uses: appleboy/ssh-action@master
-        env:
-          TAG: ${{ github.sha }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          envs: TAG
-          script: |
-            echo "TAG: $TAG"
-            docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:$TAG
-            (docker stop arlaide-ci && docker rm arlaide-ci) || echo "Nothing to stop..."
-            docker run -d --network web --name arlaide-ci --label traefik.enable=true --label traefik.docker.network=web --label traefik.frontend.rule=Host:ci.${{ secrets.SSH_HOST }} --label traefik.frontend.port=80 docker.pkg.github.com/ffauchille/arla-group-11/arlaide-ci:$TAG
-
-  functional-test:
-    needs: [build-and-deploy-ci-api]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - run: |
-          cd cucumber/
-          npm install
-          AUTH_API_SECRET=${{ secrets.AUTH_API_SECRET }} npm run test:ci
-
-  e2e-test:
-    needs: [build-and-deploy-ci-api, build-and-deploy-frontend-ci]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Run login e2e tests
-        uses: cypress-io/github-action@v2
-        with:
-          working-directory: e2e/
-          spec: cypress/integration/login/**/*
-          env: ARLAIDE_URL=https://ci.groupe11.arla-sigl.fr
-      # Upload videos artifact on test failure, to see what went wrong
-      # on the video of the test execution.
-      # You should see videos from the Actions > this worflow run;
-      # only if this workflow run failed
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: cypress-videos
-          path: cypress/videos
+          docker push docker.pkg.github.com/ffauchille/arla-group-11/arlaide-web-k8s:${{ github.sha }}

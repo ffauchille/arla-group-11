@@ -2,9 +2,7 @@ import React from "react";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
-import { TemplateMachineContext } from "../state/provider";
 import { Logout } from "./Logout";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +20,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const TemplateLayout: React.FC = ({ children }) => {
   const classes = useStyles();
-  const { user } = useAuth0();
 
   return (
     <Grid
@@ -38,7 +35,7 @@ export const TemplateLayout: React.FC = ({ children }) => {
           Frontend Workshop
         </Typography>
         <Typography variant="subtitle1" align="center">
-          {user?.email || "EPITA SIGL 2021"}
+          {"EPITA SIGL 2021"}
         </Typography>
         <Typography variant="subtitle2" align="center" color="primary">
           <Logout />

@@ -15,7 +15,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
 import { TemplateEvents } from "../state/machine";
 import { TemplateMachineContext } from "../state/provider";
-import { useAuth0 } from "@auth0/auth0-react";
 import { callApi } from "../utils/api";
 import { Comments } from "./Comments";
 
@@ -79,15 +78,13 @@ const HelpRequestTable: React.FC<HelpRequestTableProps> = ({
 };
 
 export const TemplateView2: React.FC = () => {
-  const { getAccessTokenSilently } = useAuth0();
 
   const [helpRequests, setHelpRequests] = React.useState<any[]>([]);
   const [error, setError] = React.useState<any>();
 
   const getHelpRequests = async () => {
-    const token = await getAccessTokenSilently();
     try {
-      const data = await callApi(token)("/v1/help-request?page=1&limit=10");
+      const data = await callApi("/v1/help-request?page=1&limit=10");
       setHelpRequests(data);
     } catch (error) {
       // something went wrong!
