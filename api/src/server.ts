@@ -92,8 +92,8 @@ app.use(
 // Parsing the request to a JSON for us
 app.use(bodyParser.json());
 
-app.get("/", (req: express.Request, res: express.Response) => {
-  response.send('Health check Ok')
+app.get("/", (_: express.Request, response: express.Response) => {
+  response.send('Health check Ok');
 })
 
 app.get(
