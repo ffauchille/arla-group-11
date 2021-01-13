@@ -5,8 +5,9 @@
   "main": "server.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node build/server.js",
     "clean": "rimraf build",
+    "serve": "node build/server.js",
+    "start": "npm run build && npm run serve",
     "test": "jest --passWithNoTests"
   },
   "repository": {

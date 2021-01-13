@@ -31,6 +31,7 @@ ENV DOC_DB_PASSWORD=${doc_db_password}
 ENV DOC_DB_AUTH_SOURCE=${doc_db_auth_source}
 
 RUN npm i
-CMD npm start
+RUN npm run build
+CMD npm run serve
 
 EXPOSE 3000
