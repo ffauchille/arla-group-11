@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import express from "express";
+import express, { response } from "express";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
 import log4js from "log4js";
@@ -91,6 +91,10 @@ app.use(
 );
 // Parsing the request to a JSON for us
 app.use(bodyParser.json());
+
+app.get("/", (req: express.Request, res: express.Response) => {
+  response.send('Health check Ok')
+})
 
 app.get(
   "/v1/help-request",
