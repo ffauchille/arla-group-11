@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arlaide-front
+  namespace: "groupe-11"
+  labels:
+    app.kubernetes.io/component: "front"
+    app.kubernetes.io/instance: "arlaide-front"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: "front"
+      app.kubernetes.io/instance: "arlaide-front"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: "front"
+        app.kubernetes.io/instance: "arlaide-front"
+    spec:
+      imagePullSecrets:
+        - name: github-pull
+      containers:
+      - name: "arlaide-front"
+        image: "docker.pkg.github.com/ffauchille/arla-group-11/arlaide-web-k8s:195579aaf75ca8725a01fa51b6ee0e3ef1e5d6b7"
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: 80
+        startupProbe:
+          httpGet:
+            port: http
+            path: '/'
+          initialDelaySeconds: 5
+        readinessProbe:
+          httpGet:
+            port: http
+            path: '/'
+          initialDelaySeconds: 15
+        resources:
+          limits:
+            cpu: 10m
+            memory: 64Mi
+          requests:
+            cpu: 2m
+            memory: 10Mi

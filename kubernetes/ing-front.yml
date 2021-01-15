@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: "arlaide-front"
+  namespace: "groupe-11"
+  labels:
+    app.kubernetes.io/component: "front"
+    app.kubernetes.io/instance: "arlaide-front"
+  annotations:
+    cert-manager.io/cluster-issuer: default
+spec:
+  rules:
+  - host: "web.groupe11.kube.arla-sigl.fr"
+    http:
+      paths:
+        - path: "/"
+          backend:
+            serviceName: arlaide-front
+            servicePort: http
+  tls:
+    - secretName: arlaide-front-tls
+      hosts:
+        - "web.groupe11.kube.arla-sigl.fr"
