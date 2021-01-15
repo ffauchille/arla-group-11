@@ -1,0 +1,91 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: api/
+      args:
+        db_host: postgres-13
+        db_port: 5432
+        db_name: arlaide
+        db_user: sigl2021
+        db_password: sigl2021
+        doc_db_host: mongo-4
+        doc_db_port: 27017
+        doc_db_name: arlaide
+        doc_db_user: sigl2021
+        doc_db_password: sigl2021
+        doc_db_auth_source: admin
+    container_name: arlaide-api
+    mem_limit: 512M
+    networks:
+      - arlaide-postgres
+      - arlaide-mongo
+    ports:
+      - 3000:3000
+
+  frontend:
+    build:
+      context: .
+      args:
+        api_url: http://arlaide.loc:3000
+    mem_limit: 256M
+    ports:
+      - 8080:80
+
+  mongodb:
+    image: mongo:4.4.1
+    container_name: mongo-4
+    mem_limit: 2G
+    networks:
+      - arlaide-mongo
+    volumes:
+      - "mongo-data:/data/db"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=sigl2021
+      - MONGO_INITDB_ROOT_PASSWORD=sigl2021
+    ports:
+      - "27017:27017"
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: postgres-13
+    mem_limit: 2G
+    networks:
+      - arlaide-postgres
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data:rw"
+    environment:
+      - POSTGRES_PASSWORD=sigl2021
+      - POSTGRES_USER=sigl2021
+    ports:
+      - "5432:5432"
+
+  pgadmin4:
+    image: dpage/pgadmin4:4.27
+    container_name: pgadmin4
+    networks:
+      - arlaide-postgres
+    volumes:
+      - "pgadmin-data:/var/lib/pgadmin:rw"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=arla@sigl.fr
+      - PGADMIN_DEFAULT_PASSWORD=sigl2021
+    ports:
+      - "8040:80"
+
+networks:
+  arlaide-postgres:
+    external:
+      name: arlaide-postgres
+  arlaide-mongo:
+    external:
+      name: arlaide-mongo
+
+volumes:
+  mongo-data:
+    external: true
+  postgres-data:
+    external: true
+  pgadmin-data:
+    external: true

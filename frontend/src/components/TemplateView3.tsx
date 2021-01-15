@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -67,11 +66,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ username, job }) => {
 
 const UserProfiles: React.FC = () => {
   const [userProfiles, setUserProfiles] = React.useState<any[]>([]);
-  const { getAccessTokenSilently } = useAuth0();
 
   const getUserProfiles = async () => {
-    const authToken = await getAccessTokenSilently();
-    const data = await callApi(authToken)("/v1/user-profile?page=1&limit=10");
+    const data = await callApi("/v1/user-profile?page=1&limit=10");
     setUserProfiles(data);
   };
 
